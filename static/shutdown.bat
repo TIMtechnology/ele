@@ -1,0 +1,1 @@
+taskkill /f /im pdfprinter.exe /T
