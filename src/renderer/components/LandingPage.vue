@@ -93,7 +93,7 @@ export default {
         (s) => {
           console.log(s);
           var data = s.data;
-          if (data.result == true) {
+          if (data.result === true) {
             this.PrinterList = data.service_list;
           } else {
             alert("获取打印机列表失败,JAVA服务启动失败");
