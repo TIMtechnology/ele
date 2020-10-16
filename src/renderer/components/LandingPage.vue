@@ -62,6 +62,7 @@ export default {
     },
     startDwonLoad() {
       console.log(this.fileList);
+      alert("共计需要下载:"+this.fileList.length+"个文件，请等待文件下载完成后再执行打印任务。");
       //调用接口进行下载
 
       // this.$http({
@@ -79,13 +80,21 @@ export default {
         .post(
           "http://127.0.0.1:12345/local/download",
           {file_urls: this.fileList},
-          { emulateJSON: true }
+          // { emulateJSON: true }
         //    { headers: {
         //   "Content-Type": "application/json",
         // },}
         )
         .then((e) => {
           console.log(e);
+          var data = e.data
+          if(data.result === true){
+            alert('下载完成')
+          }else{
+            alert("下载出现异常")
+          }
+        }).catch((e)=>{
+          alert("发起下载任务失败")
         });
     },
     GetPrinterList() {

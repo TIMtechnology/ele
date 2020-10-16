@@ -13,7 +13,7 @@ Vue.config.productionTip = false
 
 import VueResource from 'vue-resource'
 Vue.use(VueResource);
-Vue.http.options.emulateJSON = true;
+// Vue.http.options.emulateJSON = true;
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
