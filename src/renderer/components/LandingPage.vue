@@ -1,17 +1,8 @@
 <template>
   <div id="wrapper">
     <main>
-      <div class="left-side">
-        请选择打印机
-        <select>
-          <option v-for="item in PrinterList">
-            {{ item }}
-          </option>
-        </select>
-      </div>
-
-      <div class="right-side">
-        <el-form ref="form" :model="form" label-width="80px">
+      <div >
+         <el-form ref="form" :model="form" label-width="80px">
           <el-form-item label="用户名">
             <el-input v-model="form.username"></el-input>
           </el-form-item>
@@ -22,8 +13,25 @@
             <el-button type="primary" @click="onSubmit">立即登陆</el-button>
             <el-button @click="startDwonLoad">开始批量下载</el-button>
           </el-form-item>
+          
         </el-form>
+
+
+        <el-select v-model="printername" placeholder="请选择打印机"> 
+          <el-option v-for="item in PrinterList" >
+            {{ item }}
+          </el-option>
+        </el-select>
+        <el-select v-model="printmode" placeholder="请选择打印模式"> 
+          <el-option v-for="item in ModeList" >
+            {{ item }}
+          </el-option>
+        </el-select>
+      
+        <el-button @click="startPrint">开始打印</el-button>
+         
       </div>
+
     </main>
   </div>
 </template>
@@ -34,6 +42,9 @@ export default {
   data() {
     return {
       PrinterList: {},
+      printername:'',
+      printmode:'正面',
+      ModeList:['正面','反面','逆序反面'],
       form: {
         username: "",
         password: "",
@@ -60,6 +71,11 @@ export default {
           }
         });
     },
+    change(e){
+      console.log(e)
+      this.printername =  e
+    }
+    ,
     startDwonLoad() {
       console.log(this.fileList);
       alert("共计需要下载:"+this.fileList.length+"个文件，请等待文件下载完成后再执行打印任务。");
@@ -95,6 +111,36 @@ export default {
           }
         }).catch((e)=>{
           alert("发起下载任务失败")
+        });
+    },
+    startPrint(){
+      var files = this.fileList
+
+      files.forEach((element,index) => {
+        console.log()
+        var i = element.split("/")[2];
+        var name = i.split("_")[0]+"_"+i.split("_")[1]+".pdf";
+        files[index] = "PDF/"+name
+      });
+
+      console.log(files);
+       this.$http
+        .post(
+          "http://127.0.0.1:12345/local/commit",
+          {"files": [files[0],files[1]],'printer_name':this.printername,'mode':this.printmode},
+        // {"printer_name" : "打印机A", "mode":"正面"/"反面"/"逆序反面","files":["D:/1.pdf","D:/2.pdf"]}
+        )
+        .then((e) => {
+          console.log(e);
+          var data = e.data 
+           if (data.result === true) {
+            alert("创建打印任务成功")
+          } else {
+            alert(data.error_message);
+          }
+          
+        }).catch((e)=>{
+          alert("发起打印任务失败")
         });
     },
     GetPrinterList() {
